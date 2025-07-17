@@ -34,3 +34,20 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+# Setup de autenticación y dashboard admin
+
+1. Crea un archivo `.env.local` en la raíz de `revista-web` con:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=tu_url_supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key
+```
+
+2. Ejecuta `npm install` en la carpeta `revista-web` si no lo has hecho.
+
+3. Inicia el proyecto con `npm run dev`.
+
+4. Accede a `/login` para iniciar sesión como admin y ser redirigido al dashboard `/admin`.
+
+---
