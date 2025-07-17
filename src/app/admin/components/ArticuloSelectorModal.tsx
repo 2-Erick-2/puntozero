@@ -8,18 +8,24 @@ export default function ArticuloSelectorModal({
   categorias,
   articuloActual,
   onSelect,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: {
   open: boolean;
   onClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   articulos: any[];
   categorias: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   articuloActual: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSelect: (articulo: any) => void;
 }) {
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState("");
   const [orden, setOrden] = useState("creado"); // "creado" o "modificado"
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [seleccionado, setSeleccionado] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [articulosFiltrados, setArticulosFiltrados] = useState<any[]>([]);
 
   useEffect(() => {

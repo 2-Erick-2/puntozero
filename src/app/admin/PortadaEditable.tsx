@@ -7,9 +7,11 @@ import ArticuloSelectorModal from "./components/ArticuloSelectorModal";
 import { useState, useMemo } from "react";
 import { createSupabaseBrowser } from "../supabaseClient";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function PortadaEditable({ bloques, articulos }: { bloques: any[], articulos: any[] }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [bloqueEditando, setBloqueEditando] = useState<number|null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [bloquesState, setBloquesState] = useState<any[]>(() => [...bloques]);
   // Obtener categorías únicas
   const categorias = useMemo(() => Array.from(new Set(bloques.map(b => b.articulo?.categoria).filter(Boolean))), [bloques]);
@@ -21,6 +23,7 @@ export default function PortadaEditable({ bloques, articulos }: { bloques: any[]
   };
 
   // Handler para guardar selección y persistir en Supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSelectArticulo = async (nuevoArticulo: any) => {
     if (bloqueEditando !== null) {
       const nuevos = [...bloquesState];
