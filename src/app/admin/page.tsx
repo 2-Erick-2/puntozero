@@ -8,9 +8,7 @@ import { createSupabaseBrowser } from "../supabaseClient";
 export default function AdminPage() {
   const session = useSession();
   const router = useRouter();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [bloques, setBloques] = useState<unknown[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [articulos, setArticulos] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -63,6 +61,5 @@ export default function AdminPage() {
   if (loading) return <main className="max-w-6xl mx-auto w-full py-8 px-2 md:px-0 bg-white">Cargando portada...</main>;
   if (error) return <main className="max-w-6xl mx-auto w-full py-8 px-2 md:px-0 bg-white">{error}</main>;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return <PortadaEditable bloques={bloques as any[]} articulos={articulos as any[]} />;
 } 
