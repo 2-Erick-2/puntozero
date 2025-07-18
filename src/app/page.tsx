@@ -67,7 +67,11 @@ export default async function Home() {
     `)
     .order("posicion", { ascending: true });
 
-  const bloques = (data ?? []) as Bloque[];
+  // Después de la consulta:
+  const bloques = (data ?? []).map((b: any) => ({
+    ...b,
+    articulo: Array.isArray(b.articulo) ? b.articulo[0] ?? null : b.articulo ?? null,
+  }));
 
   if (error) {
     return <main className="max-w-6xl mx-auto w-full py-8 px-2 md:px-0 bg-white">Error cargando portada.</main>;
@@ -137,7 +141,7 @@ export default async function Home() {
         {/* Primera columna: primer artículo destacado y uno más */}
         <div className="flex flex-col h-full gap-6 md:col-span-1">
           {/* Bloque fusionado: primer artículo */}
-          {(() => { const a = bloques[0].articulo[0]; if (!a) return null; return (
+          {(() => { const a = bloques[0].articulo; if (!a) return null; return (
             <div className="flex flex-col rounded-xl overflow-hidden shadow-md h-[320px] min-h-[260px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
               <div className="relative flex-1 min-h-[120px] flex flex-col justify-end">
                 <Image src={a?.imagen ?? ""} alt={a?.titulo ?? ""} fill className="absolute inset-0 w-full h-full object-cover" />
@@ -151,14 +155,14 @@ export default async function Home() {
             </div>
           ); })()}
           {/* Segundo artículo */}
-          {(() => { const a = bloques[1].articulo[0]; return (
+          {(() => { const a = bloques[1].articulo; return (
             <BloqueRojo articulo={a} onEdit={() => {}} />
           ); })()}
         </div>
         {/* Segunda columna: dos bloques apilados, cada uno dividido en dos secciones */}
         <div className="flex flex-col gap-6 md:col-span-2">
           {/* Primer bloque: azul claro izquierda, imagen derecha */}
-          {(() => { const a = bloques[2].articulo[0]; if (!a) return null; return (
+          {(() => { const a = bloques[2].articulo; if (!a) return null; return (
             <div className="flex flex-col sm:flex-row rounded-xl overflow-hidden shadow-md h-auto sm:h-[320px] min-h-[180px] sm:min-h-[320px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
               <div className="w-full sm:w-1/2 bg-cyan-200 flex flex-col justify-between p-4 sm:p-6 relative min-h-[140px] sm:min-h-[120px]">
                 <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-cyan-700 px-3 py-1 rounded-full shadow">{a?.categoria}</span>
@@ -177,7 +181,7 @@ export default async function Home() {
             </div>
           ); })()}
           {/* Segundo bloque: imagen izquierda, verde derecha */}
-          {(() => { const a = bloques[3].articulo[0]; if (!a) return null; return (
+          {(() => { const a = bloques[3].articulo; if (!a) return null; return (
             <div className="flex flex-col sm:flex-row rounded-xl overflow-hidden shadow-md h-auto sm:h-[240px] min-h-[180px] sm:min-h-[240px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
               {/* Sección imagen (izquierda) */}
               <div className="w-full sm:w-1/2 min-h-[160px] sm:min-h-[120px] relative flex flex-col justify-end">
@@ -202,7 +206,7 @@ export default async function Home() {
         <div className="flex flex-col h-full min-h-0 md:col-span-1 rounded-xl overflow-hidden shadow-md transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
           <div className="flex flex-col h-full min-h-0 flex-1">
             <div className="relative flex-1 flex flex-col justify-end h-1/2 min-h-[180px] sm:min-h-0">
-              {(() => { const a = bloques[4].articulo[0]; if (!a) return null; return (
+              {(() => { const a = bloques[4].articulo; if (!a) return null; return (
                 <Image src={a?.imagen ?? ""} alt={a?.titulo ?? ""} fill className="absolute inset-0 w-full h-full object-cover min-h-[180px] sm:min-h-0" />
               ); })()}
               <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-yellow-700 px-3 py-1 rounded-full shadow">{bloques[4]?.articulo?.[0]?.categoria}</span>
@@ -219,7 +223,7 @@ export default async function Home() {
         </div>
       </section>
       {/* Bloque ancho debajo del grid de tres columnas */}
-      {(() => { const a = bloques[5].articulo[0]; if (!a) return null; return (
+      {(() => { const a = bloques[5].articulo; if (!a) return null; return (
         <section className="w-full flex flex-col md:flex-row mt-10 rounded-xl overflow-hidden shadow-md transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl h-auto md:h-[420px] min-h-[320px]">
           {/* Imagen lado izquierdo (desktop), arriba (móvil) */}
           <div className="relative w-full md:w-1/2 h-60 md:h-full min-h-[200px] flex-1">
@@ -244,7 +248,7 @@ export default async function Home() {
         {/* Columna 1: un solo bloque, igual al primer bloque de la primer columna de la primer sección, de alto igual a la primer sección */}
         <div className="flex flex-col w-full md:col-span-1 h-auto min-h-[320px] rounded-xl overflow-hidden shadow-md transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
           {/* Bloque fusionado */}
-          {(() => { const a = bloques[6].articulo[0]; if (!a) return null; return (
+          {(() => { const a = bloques[6].articulo; if (!a) return null; return (
             <div className="flex flex-col rounded-xl overflow-hidden shadow-md h-full min-h-[260px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
               <div className="relative flex-1 min-h-[120px] flex flex-col justify-end">
                 <Image src={a?.imagen ?? ""} alt={a?.titulo ?? ""} fill className="absolute inset-0 w-full h-full object-cover" />
@@ -263,39 +267,39 @@ export default async function Home() {
           {/* Layout móvil: intercalado, ambos bloques rojos */}
           <div className="flex flex-col gap-6 md:hidden">
             {/* BloqueHorizontal1 (row 1) */}
-            <BloqueHorizontal1Real articulo={bloques[7].articulo[0]} onEdit={() => {}} />
+            <BloqueHorizontal1Real articulo={bloques[7].articulo} onEdit={() => {}} />
             {/* BloqueHorizontal2 (row 1) */}
-            <BloqueHorizontal2Real articulo={bloques[8].articulo[0]} onEdit={() => {}} />
+            <BloqueHorizontal2Real articulo={bloques[8].articulo} onEdit={() => {}} />
             {/* BloqueHorizontal1 (row 2) con fondo rosa */}
-            <BloqueHorizontal1Real articulo={bloques[9].articulo[0]} colorFondo="bg-pink-200" onEdit={() => {}} />
+            <BloqueHorizontal1Real articulo={bloques[9].articulo} colorFondo="bg-pink-200" onEdit={() => {}} />
             {/* BloqueHorizontal2 (row 2) */}
-            <BloqueHorizontal2Real articulo={bloques[10].articulo[0]} onEdit={() => {}} />
+            <BloqueHorizontal2Real articulo={bloques[10].articulo} onEdit={() => {}} />
           </div>
           {/* Layout desktop: dos rows, dos columnas, ambos bloques rojos visibles */}
           <div className="hidden md:flex flex-col h-full w-full gap-3">
             {/* Primer row */}
             <div className="flex flex-row gap-6 h-full w-full mb-6">
               <div className="flex flex-col w-full basis-2/3 max-w-[66%]">
-                <BloqueHorizontal1Real articulo={bloques[7].articulo[0]} onEdit={() => {}} />
+                <BloqueHorizontal1Real articulo={bloques[7].articulo} onEdit={() => {}} />
               </div>
               <div className="flex flex-col w-full basis-1/3 max-w-[34%]">
-                <BloqueHorizontal2Real articulo={bloques[8].articulo[0]} onEdit={() => {}} />
+                <BloqueHorizontal2Real articulo={bloques[8].articulo} onEdit={() => {}} />
               </div>
             </div>
             {/* Segundo row: fondo rosa e invierte orden en desktop */}
             <div className="flex flex-row gap-6 h-full w-full">
               <div className="flex flex-col w-full basis-1/3 max-w-[34%]">
-                <BloqueHorizontal2Real articulo={bloques[9].articulo[0]} onEdit={() => {}} />
+                <BloqueHorizontal2Real articulo={bloques[9].articulo} onEdit={() => {}} />
               </div>
               <div className="flex flex-col w-full basis-2/3 max-w-[66%]">
-                <BloqueHorizontal1Real articulo={bloques[10].articulo[0]} colorFondo="bg-pink-200" invertirDesktop onEdit={() => {}} />
+                <BloqueHorizontal1Real articulo={bloques[10].articulo} colorFondo="bg-pink-200" invertirDesktop onEdit={() => {}} />
               </div>
             </div>
           </div>
         </div>
       </section>
       {/* Duplicado del bloque ancho especial debajo de la sección de dos columnas, con color verde e invertido */}
-      {(() => { const a = bloques[15].articulo[0]; if (!a) return null; return (
+      {(() => { const a = bloques[15].articulo; if (!a) return null; return (
         <section className="w-full flex flex-col md:flex-row-reverse mt-10 rounded-xl overflow-hidden shadow-md transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl h-auto md:h-[420px] min-h-[320px]">
           {/* Imagen lado derecho (desktop), abajo (móvil) */}
           <div className="relative w-full md:w-1/2 h-60 md:h-full min-h-[200px] flex-1">
@@ -320,7 +324,7 @@ export default async function Home() {
         {/* Primera columna: primer artículo destacado y uno más */}
         <div className="flex flex-col h-full gap-6 md:col-span-1">
           {/* Bloque fusionado: primer artículo */}
-          {(() => { const a = bloques[12].articulo[0]; if (!a) return null; return (
+          {(() => { const a = bloques[12].articulo; if (!a) return null; return (
             <div className="flex flex-col rounded-xl overflow-hidden shadow-md h-[320px] min-h-[260px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
               <div className="relative flex-1 min-h-[120px] flex flex-col justify-end">
                 <Image src={a?.imagen ?? ""} alt={a?.titulo ?? ""} fill className="absolute inset-0 w-full h-full object-cover" />
@@ -334,14 +338,14 @@ export default async function Home() {
             </div>
           ); })()}
           {/* Segundo artículo */}
-          {(() => { const a = bloques[13].articulo[0]; return (
+          {(() => { const a = bloques[13].articulo; return (
             <BloqueRojo articulo={a} onEdit={() => {}} />
           ); })()}
         </div>
         {/* Segunda columna: dos bloques apilados, cada uno dividido en dos secciones */}
         <div className="flex flex-col gap-6 md:col-span-2">
           {/* Primer bloque: amarillo igual que admin */}
-          {(() => { const a = bloques[14].articulo[0]; if (!a) return null; return (
+          {(() => { const a = bloques[14].articulo; if (!a) return null; return (
             <div className="flex flex-col md:flex-row h-full min-h-0 flex-1 rounded-2xl overflow-hidden shadow-lg">
               {/* Sección contenido (izquierda) */}
               <div className="w-full md:w-1/2 bg-yellow-200 flex flex-col justify-center p-4 sm:p-6 h-auto md:h-full">
@@ -360,7 +364,7 @@ export default async function Home() {
             </div>
           ); })()}
           {/* Segundo bloque: imagen izquierda, verde derecha (ya correcto) */}
-          {(() => { const a = bloques[15].articulo[0]; if (!a) return null; return (
+          {(() => { const a = bloques[15].articulo; if (!a) return null; return (
             <div className="flex flex-col sm:flex-row rounded-xl overflow-hidden shadow-md h-auto sm:h-[240px] min-h-[180px] sm:min-h-[240px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
               {/* Sección imagen (izquierda) */}
               <div className="w-full sm:w-1/2 min-h-[160px] sm:min-h-[120px] relative flex flex-col justify-end">
@@ -384,7 +388,7 @@ export default async function Home() {
         {/* Tercera columna: bloque único con dos secciones */}
         <div className="flex flex-col h-full min-h-0 md:col-span-1 rounded-xl overflow-hidden shadow-md transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
           {/* Primer bloque: azul igual que admin */}
-          {(() => { const a = bloques[16].articulo[0]; if (!a) return null; return (
+          {(() => { const a = bloques[16].articulo; if (!a) return null; return (
             <div className="flex flex-col h-full min-h-0 flex-1">
               <div className="relative flex-1 flex flex-col justify-end h-1/2 min-h-[180px] sm:min-h-0">
                 <Image src={a?.imagen ?? ""} alt={a?.titulo ?? ""} fill className="absolute inset-0 w-full h-full object-cover min-h-[180px] sm:min-h-0" />
