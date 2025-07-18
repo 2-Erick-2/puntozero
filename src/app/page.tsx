@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -209,15 +210,15 @@ export default async function Home() {
               {(() => { const a = bloques[4].articulo; if (!a) return null; return (
                 <Image src={a?.imagen ?? ""} alt={a?.titulo ?? ""} fill className="absolute inset-0 w-full h-full object-cover min-h-[180px] sm:min-h-0" />
               ); })()}
-              <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-yellow-700 px-3 py-1 rounded-full shadow">{bloques[4]?.articulo?.[0]?.categoria}</span>
+              <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-yellow-700 px-3 py-1 rounded-full shadow">{bloques[4]?.articulo?.categoria}</span>
               <div className="relative z-10 p-6 flex flex-col justify-end h-full bg-gradient-to-t from-black/60 via-black/20 to-transparent">
-                <Link href={bloques[4]?.articulo?.[0] ? `/articulo/${bloques[4].articulo[0].slug}` : "#"} className="bg-white/90 text-black font-semibold px-6 py-2 rounded-full self-start hover:bg-yellow-500 hover:text-white hover:shadow-lg transition">Leer más</Link>
+                <Link href={bloques[4]?.articulo? `/articulo/${bloques[4].articulo.slug}` : "#"} className="bg-white/90 text-black font-semibold px-6 py-2 rounded-full self-start hover:bg-yellow-500 hover:text-white hover:shadow-lg transition">Leer más</Link>
               </div>
             </div>
             <div className="bg-yellow-200 flex flex-col justify-start p-4 sm:p-6 flex-1 h-1/2">
-              <h3 className="text-yellow-900 text-xl sm:text-2xl font-bold mb-1 mt-4">{bloques[4]?.articulo?.[0]?.titulo}</h3>
-              <span className="block text-xs text-yellow-800 font-semibold mb-2">{bloques[4]?.articulo?.[0]?.fecha}</span>
-              <p className="text-yellow-900 text-base sm:text-lg break-words">{bloques[4]?.articulo?.[0]?.descripcion_corta}</p>
+              <h3 className="text-yellow-900 text-xl sm:text-2xl font-bold mb-1 mt-4">{bloques[4]?.articulo?.titulo}</h3>
+              <span className="block text-xs text-yellow-800 font-semibold mb-2">{bloques[4]?.articulo?.fecha}</span>
+              <p className="text-yellow-900 text-base sm:text-lg break-words">{bloques[4]?.articulo?.descripcion_corta}</p>
             </div>
           </div>
         </div>
