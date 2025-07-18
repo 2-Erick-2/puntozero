@@ -78,42 +78,55 @@ export default async function Home() {
 
   // Helper para los bloques rojos sin botón
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const BloqueRojo = ({ articulo }: { articulo: any }) => (
-    <div className="relative rounded-xl overflow-hidden shadow-md bg-red-600 flex flex-col items-center p-6 h-[240px] min-h-[80px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
-      <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-red-700 px-3 py-1 rounded-full shadow">{articulo.fecha}</span>
-      <div className="flex-1 flex flex-col justify-center items-center">
-        <h3 className="text-white text-lg font-bold mt-8">{articulo.titulo}</h3>
+  const BloqueRojo = ({ articulo, onEdit }: { articulo: any, onEdit: () => void }) => {
+    if (!articulo) return null;
+    return (
+      <div className="relative rounded-xl overflow-hidden shadow-md bg-red-600 flex flex-col items-center p-6 h-[240px] min-h-[80px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
+        {/* <EditButton onClick={onEdit} bloque={0} /> */}
+        <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-red-700 px-3 py-1 rounded-full shadow">{articulo.fecha}</span>
+        <div className="flex-1 flex flex-col justify-center items-center">
+          <h3 className="text-white text-lg font-bold mt-8">{articulo.titulo}</h3>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Helper para los bloques horizontales
-  const BloqueHorizontal1Real = ({ articulo, colorFondo = 'bg-yellow-200', invertirDesktop = false }: { articulo: any, colorFondo?: string, invertirDesktop?: boolean }) => (
-    <div className={`flex flex-col sm:flex-row rounded-xl overflow-hidden shadow-md h-auto min-h-[180px] sm:min-h-[240px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl ${invertirDesktop ? 'sm:flex-row-reverse' : ''} sm:items-stretch`}>
-      <div className={`w-full sm:w-1/2 ${colorFondo} flex flex-col justify-between p-4 sm:p-6 relative min-h-[140px] sm:min-h-[120px] h-full`}>
-        <span className={`absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold ${colorFondo === 'bg-pink-200' ? 'text-pink-700' : 'text-yellow-700'} px-3 py-1 rounded-full shadow`}>{articulo.categoria}</span>
-        <div className="flex-1 flex flex-col justify-center">
-          <h2 className={`text-${colorFondo === 'bg-pink-200' ? 'pink' : 'yellow'}-900 text-xl sm:text-2xl font-bold mb-2 mt-8`}>{articulo.titulo}</h2>
-          <span className={`block text-xs ${colorFondo === 'bg-pink-200' ? 'text-pink-800' : 'text-yellow-800'} font-semibold mb-1`}>{articulo.fecha}</span>
-          <p className={`text-${colorFondo === 'bg-pink-200' ? 'pink' : 'yellow'}-900 text-base sm:text-lg mb-4 break-words`}>{articulo.descripcion_corta}</p>
+  const BloqueHorizontal1Real = ({ articulo, colorFondo = 'bg-yellow-200', invertirDesktop = false, onEdit }: { articulo: any, colorFondo?: string, invertirDesktop?: boolean, onEdit: () => void }) => {
+    if (!articulo) return null;
+    return (
+      <div className={`flex flex-col sm:flex-row rounded-xl overflow-hidden shadow-md h-auto min-h-[180px] sm:min-h-[240px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl ${invertirDesktop ? 'sm:flex-row-reverse' : ''} sm:items-stretch`}>
+        {/* <EditButton onClick={onEdit} bloque={0} /> */}
+        <div className={`w-full sm:w-1/2 ${colorFondo} flex flex-col justify-between p-4 sm:p-6 relative min-h-[140px] sm:min-h-[120px] h-full`}>
+          <span className={`absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold ${colorFondo === 'bg-pink-200' ? 'text-pink-700' : 'text-yellow-700'} px-3 py-1 rounded-full shadow`}>{articulo.categoria}</span>
+          <div className="flex-1 flex flex-col justify-center">
+            <h2 className={`text-${colorFondo === 'bg-pink-200' ? 'pink' : 'yellow'}-900 text-xl sm:text-2xl font-bold mb-2 mt-8`}>{articulo.titulo}</h2>
+            <span className={`block text-xs ${colorFondo === 'bg-pink-200' ? 'text-pink-800' : 'text-yellow-800'} font-semibold mb-1`}>{articulo.fecha}</span>
+            <p className={`text-${colorFondo === 'bg-pink-200' ? 'pink' : 'yellow'}-900 text-base sm:text-lg mb-4 break-words`}>{articulo.descripcion_corta}</p>
+          </div>
+          <div className="flex justify-center sm:justify-start mt-4">
+            <Link href={`/articulo/${articulo.slug}`} className="bg-white/90 text-black font-semibold px-6 py-2 rounded-full hover:bg-yellow-700 hover:text-white hover:shadow-lg transition">Leer más</Link>
+          </div>
+        </div>
+        <div className="w-full sm:w-1/2 min-h-[160px] sm:min-h-[120px] relative flex flex-col justify-end h-full">
+          <Image src={articulo.imagen} alt={articulo.titulo} fill className="object-cover w-full h-full min-h-[160px] sm:min-h-[120px] absolute inset-0" />
+          {/* El botón solo va en la sección de color de fondo */}
         </div>
       </div>
-      <div className="w-full sm:w-1/2 min-h-[160px] sm:min-h-[120px] relative flex flex-col justify-end h-full">
-        <Image src={articulo.imagen} alt={articulo.titulo} fill className="object-cover w-full h-full min-h-[160px] sm:min-h-[120px] absolute inset-0" />
-        <div className="relative z-20 flex justify-center pb-4">
-          <Link href={`/articulo/${articulo.slug}`} className="bg-white/90 text-black font-semibold px-6 py-2 rounded-full hover:bg-yellow-700 hover:text-white hover:shadow-lg transition">Leer más</Link>
+    );
+  };
+  const BloqueHorizontal2Real = ({ articulo, onEdit }: { articulo: any, onEdit: () => void }) => {
+    if (!articulo) return null;
+    return (
+      <div className="relative rounded-xl overflow-hidden shadow-md bg-red-600 flex flex-col items-center p-6 h-[240px] min-h-[80px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
+        {/* <EditButton onClick={onEdit} bloque={0} /> */}
+        <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-red-700 px-3 py-1 rounded-full shadow">{articulo.fecha}</span>
+        <div className="flex-1 flex flex-col justify-center items-center">
+          <h3 className="text-white text-lg font-bold mt-8">{articulo.titulo}</h3>
         </div>
       </div>
-    </div>
-  );
-  const BloqueHorizontal2Real = ({ articulo }: { articulo: any }) => (
-    <div className="relative rounded-xl overflow-hidden shadow-md bg-red-600 flex flex-col items-center p-6 h-[240px] min-h-[80px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
-      <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-red-700 px-3 py-1 rounded-full shadow">{articulo.fecha}</span>
-      <div className="flex-1 flex flex-col justify-center items-center">
-        <h3 className="text-white text-lg font-bold mt-8">{articulo.titulo}</h3>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <main className="max-w-6xl mx-auto w-full py-8 px-2 md:px-0 bg-white">
@@ -139,7 +152,7 @@ export default async function Home() {
           ); })()}
           {/* Segundo artículo */}
           {(() => { const a = bloques[1].articulo[0]; return (
-            <BloqueRojo articulo={a} />
+            <BloqueRojo articulo={a} onEdit={() => {}} />
           ); })()}
         </div>
         {/* Segunda columna: dos bloques apilados, cada uno dividido en dos secciones */}
@@ -250,32 +263,32 @@ export default async function Home() {
           {/* Layout móvil: intercalado, ambos bloques rojos */}
           <div className="flex flex-col gap-6 md:hidden">
             {/* BloqueHorizontal1 (row 1) */}
-            <BloqueHorizontal1Real articulo={bloques[7].articulo[0]} />
+            <BloqueHorizontal1Real articulo={bloques[7].articulo[0]} onEdit={() => {}} />
             {/* BloqueHorizontal2 (row 1) */}
-            <BloqueHorizontal2Real articulo={bloques[8].articulo[0]} />
+            <BloqueHorizontal2Real articulo={bloques[8].articulo[0]} onEdit={() => {}} />
             {/* BloqueHorizontal1 (row 2) con fondo rosa */}
-            <BloqueHorizontal1Real articulo={bloques[9].articulo[0]} colorFondo="bg-pink-200" />
+            <BloqueHorizontal1Real articulo={bloques[9].articulo[0]} colorFondo="bg-pink-200" onEdit={() => {}} />
             {/* BloqueHorizontal2 (row 2) */}
-            <BloqueHorizontal2Real articulo={bloques[10].articulo[0]} />
+            <BloqueHorizontal2Real articulo={bloques[10].articulo[0]} onEdit={() => {}} />
           </div>
           {/* Layout desktop: dos rows, dos columnas, ambos bloques rojos visibles */}
           <div className="hidden md:flex flex-col h-full w-full gap-3">
             {/* Primer row */}
             <div className="flex flex-row gap-6 h-full w-full mb-6">
               <div className="flex flex-col w-full basis-2/3 max-w-[66%]">
-                <BloqueHorizontal1Real articulo={bloques[7].articulo[0]} />
+                <BloqueHorizontal1Real articulo={bloques[7].articulo[0]} onEdit={() => {}} />
               </div>
               <div className="flex flex-col w-full basis-1/3 max-w-[34%]">
-                <BloqueHorizontal2Real articulo={bloques[8].articulo[0]} />
+                <BloqueHorizontal2Real articulo={bloques[8].articulo[0]} onEdit={() => {}} />
               </div>
             </div>
             {/* Segundo row: fondo rosa e invierte orden en desktop */}
             <div className="flex flex-row gap-6 h-full w-full">
               <div className="flex flex-col w-full basis-1/3 max-w-[34%]">
-                <BloqueHorizontal2Real articulo={bloques[9].articulo[0]} />
+                <BloqueHorizontal2Real articulo={bloques[9].articulo[0]} onEdit={() => {}} />
               </div>
               <div className="flex flex-col w-full basis-2/3 max-w-[66%]">
-                <BloqueHorizontal1Real articulo={bloques[10].articulo[0]} colorFondo="bg-pink-200" invertirDesktop />
+                <BloqueHorizontal1Real articulo={bloques[10].articulo[0]} colorFondo="bg-pink-200" invertirDesktop onEdit={() => {}} />
               </div>
             </div>
           </div>
@@ -322,7 +335,7 @@ export default async function Home() {
           ); })()}
           {/* Segundo artículo */}
           {(() => { const a = bloques[13].articulo[0]; return (
-            <BloqueRojo articulo={a} />
+            <BloqueRojo articulo={a} onEdit={() => {}} />
           ); })()}
         </div>
         {/* Segunda columna: dos bloques apilados, cada uno dividido en dos secciones */}
