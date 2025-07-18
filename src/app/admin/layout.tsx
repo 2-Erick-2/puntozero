@@ -86,6 +86,7 @@ function CrearArticuloModal({ open, onClose }: { open: boolean, onClose: () => v
       alert('Artículo creado correctamente.');
       handleClose();
     } catch (err: any) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       console.error('Error al guardar artículo:', err);
       alert('Error al guardar el artículo: ' + (err.message || err));
       setLoading(false);

@@ -54,6 +54,7 @@ export default async function Home() {
   }
 
   // Helper para los bloques rojos sin botón
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const BloqueRojo = ({ articulo }: { articulo: any }) => (
     <div className="relative rounded-xl overflow-hidden shadow-md bg-red-600 flex flex-col items-center p-6 h-[240px] min-h-[80px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
       <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-red-700 px-3 py-1 rounded-full shadow">{articulo.fecha}</span>
@@ -395,7 +396,8 @@ interface BloqueHorizontal2Props {
 }
 
 // Componentes internos para los bloques horizontales
-function BloqueHorizontal1({ categoria, titulo, fecha, descripcion, imagen, colorFondo = 'bg-yellow-200', invertirDesktop = false }: BloqueHorizontal1Props) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function BloqueHorizontal1({ categoria, titulo, fecha, descripcion, imagen, colorFondo = 'bg-yellow-200', invertirDesktop = false }: any) {
   const colorTexto = colorFondo === 'bg-pink-200' ? 'text-pink-900' : 'text-yellow-900';
   const colorCategoria = colorFondo === 'bg-pink-200' ? 'text-pink-800' : 'text-yellow-800';
   const colorDescripcion = colorFondo === 'bg-pink-200' ? 'text-pink-900' : 'text-yellow-900';
@@ -421,12 +423,13 @@ function BloqueHorizontal1({ categoria, titulo, fecha, descripcion, imagen, colo
   );
 }
 
-function BloqueHorizontal2({ fecha, titulo }: BloqueHorizontal2Props) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function BloqueHorizontal2({ articulo }: { articulo: any }) {
   return (
     <div className="relative rounded-xl overflow-hidden shadow-md bg-red-600 flex flex-col items-center p-6 h-[240px] min-h-[80px] transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
-      <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-red-700 px-3 py-1 rounded-full shadow">{fecha}</span>
+      <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-red-700 px-3 py-1 rounded-full shadow">{articulo.fecha}</span>
       <div className="flex-1 flex flex-col justify-center items-center">
-        <h3 className="text-white text-lg font-bold mt-8">{titulo}</h3>
+        <h3 className="text-white text-lg font-bold mt-8">{articulo.titulo}</h3>
       </div>
     </div>
   );
