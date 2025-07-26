@@ -31,17 +31,18 @@ function processImageUrl(url: string): string {
 }
 
 interface ArticuloPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default async function ArticuloPage({ params }: ArticuloPageProps) {
+  const { slug } = await params;
   const supabase = createSupabaseBrowser();
   const { data: articulos, error } = await supabase
     .from('articulos')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .single();
 
   if (error || !articulos) {
