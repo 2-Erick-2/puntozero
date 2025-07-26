@@ -1,75 +1,127 @@
-"use client";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { createSupabaseBrowser } from "../../supabaseClient";
+import { notFound } from "next/navigation";
 
-// Mock de datos de ejemplo
-const articulo = {
-  titulo: "Tendencias Primavera 2024",
-  categoria: "MODA",
-  fecha: "16 JUL 2024",
-  imagen: "/slider1.jpg",
-  contenido: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, nisi eu consectetur consectetur, nisl nisi consectetur nisi, euismod euismod nisi nisi euismod. Pellentesque euismod, nisi eu consectetur consectetur, nisl nisi consectetur nisi, euismod euismod nisi nisi euismod. Pellentesque euismod, nisi eu consectetur consectetur, nisl nisi consectetur nisi, euismod euismod nisi nisi euismod.`
-};
+// Tipos para el artículo
+interface Articulo {
+  id: string;
+  titulo: string;
+  slug: string;
+  categoria: string;
+  imagen: string;
+  descripcion_corta: string;
+  fecha: string;
+  contenido: string;
+  created_at: string;
+  updated_at: string;
+}
 
-const relacionados = [
-  {
-    titulo: "Colores y Texturas 2024",
-    categoria: "MODA",
-    imagen: "/slider2.jpg",
-    slug: "colores-texturas-2024"
-  },
-  {
-    titulo: "Accesorios imprescindibles",
-    categoria: "MODA",
-    imagen: "/slider3.jpg",
-    slug: "accesorios-imprescindibles"
-  },
-  {
-    titulo: "Estilo urbano",
-    categoria: "MODA",
-    imagen: "/slider1.jpg",
-    slug: "estilo-urbano"
+// Helper para procesar URLs de imágenes de Supabase Storage
+function processImageUrl(url: string): string {
+  if (!url) return "";
+  if (url.startsWith('http')) {
+    return url;
   }
-];
+  if (url.startsWith('/storage/')) {
+    return `https://${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('https://', '')}${url}`;
+  }
+  return url;
+}
 
-export default function ArticuloPage() {
+interface ArticuloPageProps {
+  params: {
+    slug: string;
+  };
+}
+
+export default async function ArticuloPage({ params }: ArticuloPageProps) {
+  const supabase = createSupabaseBrowser();
+  const { data: articulos, error } = await supabase
+    .from('articulos')
+    .select('*')
+    .eq('slug', params.slug)
+    .single();
+
+  if (error || !articulos) {
+    notFound();
+  }
+
+  const articulo: Articulo = {
+    ...articulos,
+    imagen: processImageUrl(articulos.imagen)
+  };
+
   return (
-    <main className="bg-white min-h-screen pb-16">
-      {/* Banner principal */}
-      <section className="relative w-full h-[320px] md:h-[480px] flex items-center justify-center overflow-hidden mb-10">
-        <Image src={articulo.imagen} alt={articulo.titulo} fill priority className="object-cover w-full h-full absolute inset-0" />
-        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center bg-gradient-to-t from-black/70 via-black/30 to-transparent">
-          <span className="text-white text-xs font-bold uppercase mb-4 bg-black/60 px-4 py-2 rounded-full shadow">{articulo.categoria}</span>
-          <h1 className="text-white text-4xl md:text-6xl font-extrabold text-center drop-shadow-lg mb-2 px-4">{articulo.titulo}</h1>
-          <span className="text-white/80 text-sm font-semibold">{articulo.fecha}</span>
+    <main className="max-w-4xl mx-auto w-full py-8 px-4 bg-white">
+      {/* Botón de regreso */}
+      <div className="mb-8">
+        <Link
+          href="/articulos"
+          className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Volver a Artículos
+        </Link>
+      </div>
+
+      {/* Header del artículo */}
+      <header className="mb-8">
+        <div className="mb-4">
+          <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
+            {articulo.categoria}
+          </span>
         </div>
-      </section>
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+          {articulo.titulo}
+        </h1>
+        <p className="text-gray-600 text-lg mb-4">
+          {articulo.descripcion_corta}
+        </p>
+        <div className="flex items-center text-gray-500 text-sm">
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          {articulo.fecha}
+        </div>
+      </header>
+
+      {/* Imagen destacada */}
+      <div className="relative h-96 md:h-[500px] mb-8 rounded-xl overflow-hidden">
+        <Image
+          src={articulo.imagen}
+          alt={articulo.titulo}
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
+
       {/* Contenido del artículo */}
-      <section className="max-w-3xl mx-auto w-full px-4 md:px-0 mb-16">
-        <article className="prose prose-lg max-w-none text-neutral-900">
-          <p>{articulo.contenido}</p>
-          <p>{articulo.contenido}</p>
-          <p>{articulo.contenido}</p>
-        </article>
-      </section>
-      {/* Artículos relacionados */}
-      <section className="max-w-6xl mx-auto w-full px-4 md:px-0">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-neutral-900">Artículos relacionados</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {relacionados.map((rel) => (
-            <Link href={`/articulo/${rel.slug}`} key={rel.slug} className="group rounded-xl overflow-hidden shadow-md bg-white flex flex-col transition-transform duration-200 hover:scale-[1.03] hover:shadow-2xl">
-              <div className="relative w-full h-48">
-                <Image src={rel.imagen} alt={rel.titulo} fill className="object-cover w-full h-full" />
-                <span className="absolute top-3 left-4 z-20 bg-white/80 text-xs font-bold text-pink-700 px-3 py-1 rounded-full shadow">{rel.categoria}</span>
-              </div>
-              <div className="p-6 flex flex-col flex-1 justify-between">
-                <h3 className="text-lg font-bold text-neutral-900 mb-2 group-hover:text-pink-700 transition-colors">{rel.titulo}</h3>
-                <span className="text-xs text-neutral-500 font-semibold">{rel.categoria}</span>
-              </div>
-            </Link>
-          ))}
+      <article className="prose prose-lg max-w-none">
+        <div 
+          className="text-gray-800 leading-relaxed text-lg"
+          dangerouslySetInnerHTML={{ __html: articulo.contenido }}
+        />
+      </article>
+
+      {/* Footer del artículo */}
+      <footer className="mt-12 pt-8 border-t border-gray-200">
+        <div className="flex items-center justify-between">
+          <div className="text-gray-600">
+            <p className="text-sm">Artículo publicado el {articulo.fecha}</p>
+          </div>
+          <Link
+            href="/articulos"
+            className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-full hover:bg-blue-700 transition-colors"
+          >
+            Ver más artículos
+          </Link>
         </div>
-      </section>
+      </footer>
     </main>
   );
 } 
