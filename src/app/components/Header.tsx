@@ -117,13 +117,22 @@ export default function Header() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <input
-            type="text"
-            name="q"
-            placeholder="Buscar artículos..."
-            className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-            autoFocus
-          />
+          <form action="/buscar" method="get" className="w-full">
+            <input
+              type="text"
+              name="q"
+              placeholder="Buscar artículos..."
+              className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+              autoFocus
+              required
+            />
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white px-4 py-2 rounded mt-2 hover:bg-blue-700 transition-colors"
+            >
+              Buscar
+            </button>
+          </form>
         </div>
       </div>
       {showLogout && (
