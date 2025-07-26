@@ -140,11 +140,14 @@ function EditarArticulosModal({ open, onClose, onRefetch }: { open: boolean, onC
   const [articuloEditando, setArticuloEditando] = useState<any>(null);
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState("");
+  // Saber si un artículo está asignado a un bloque
+  const [articulosAsignados, setArticulosAsignados] = useState<{[id: string]: boolean}>({});
 
   // Cargar artículos
   useEffect(() => {
     if (open) {
       cargarArticulos();
+      cargarArticulosAsignados();
     }
   }, [open]);
 
@@ -165,6 +168,19 @@ function EditarArticulosModal({ open, onClose, onRefetch }: { open: boolean, onC
     } finally {
       setLoading(false);
     }
+  };
+
+  const cargarArticulosAsignados = async () => {
+    const supabase = createSupabaseBrowser();
+    const { data, error } = await supabase
+      .from('bloques_portada')
+      .select('articulo_id');
+    if (error) return;
+    const asignados: {[id: string]: boolean} = {};
+    (data || []).forEach((b: any) => {
+      if (b.articulo_id) asignados[b.articulo_id] = true;
+    });
+    setArticulosAsignados(asignados);
   };
 
   const handleEditar = (articulo: any) => {
@@ -265,7 +281,9 @@ function EditarArticulosModal({ open, onClose, onRefetch }: { open: boolean, onC
                   </button>
                   <button
                     onClick={() => handleEliminar(articulo)}
-                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+                    className={`bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition ${articulosAsignados[articulo.id] ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    disabled={!!articulosAsignados[articulo.id]}
+                    title={articulosAsignados[articulo.id] ? 'No se puede eliminar: asignado a un bloque' : 'Eliminar'}
                   >
                     Eliminar
                   </button>
