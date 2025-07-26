@@ -3,7 +3,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Slider from "./components/Slider";
-import { createSupabaseBrowser } from "./supabaseClient";
+import { createSupabaseServer } from "./supabaseClient";
 
 const sliderData = [
   {
@@ -46,7 +46,7 @@ interface Bloque {
 
 export default async function Home() {
   // Fetch bloques_portada con join a articulos
-  const supabase = createSupabaseBrowser();
+  const supabase = createSupabaseServer();
   const { data, error } = await supabase
     .from("bloques_portada")
     .select(`
