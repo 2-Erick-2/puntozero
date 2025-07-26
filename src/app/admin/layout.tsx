@@ -133,7 +133,7 @@ function CrearArticuloModal({ open, onClose }: { open: boolean, onClose: () => v
 }
 
 // Componente para editar artículos
-function EditarArticulosModal({ open, onClose }: { open: boolean, onClose: () => void }) {
+function EditarArticulosModal({ open, onClose, onRefetch }: { open: boolean, onClose: () => void, onRefetch: () => void }) {
   const [articulos, setArticulos] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
@@ -187,6 +187,7 @@ function EditarArticulosModal({ open, onClose }: { open: boolean, onClose: () =>
       if (error) throw error;
       alert('Artículo eliminado correctamente.');
       cargarArticulos();
+      onRefetch(); // Llamar a la función de refetch del padre
     } catch (err: any) {
       console.error('Error al eliminar artículo:', err);
       alert('Error al eliminar artículo: ' + err.message);
@@ -291,6 +292,7 @@ function EditarArticulosModal({ open, onClose }: { open: boolean, onClose: () =>
               setModalEditar(false);
               setArticuloEditando(null);
               cargarArticulos();
+              onRefetch(); // Llamar a la función de refetch del padre
             }}
           />
         )}
@@ -453,6 +455,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [openMenu, setOpenMenu] = useState(false);
   const [modalCrear, setModalCrear] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
+
+  // Función para refetchear datos (será llamada por el modal de editar)
+  const handleRefetch = () => {
+    // Disparar un evento personalizado que será escuchado por la página admin
+    window.dispatchEvent(new CustomEvent('refetchAdminData'));
+  };
+
   return (
     <>
       <header className="w-full flex items-center justify-between py-4 px-4 bg-white shadow-md sticky top-0 z-50">
@@ -484,7 +493,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </header>
       <CrearArticuloModal open={modalCrear} onClose={() => setModalCrear(false)} />
-      <EditarArticulosModal open={modalEditar} onClose={() => setModalEditar(false)} />
+      <EditarArticulosModal open={modalEditar} onClose={() => setModalEditar(false)} onRefetch={handleRefetch} />
       <main>{children}</main>
     </>
   );

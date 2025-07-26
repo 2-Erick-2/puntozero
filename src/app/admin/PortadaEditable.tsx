@@ -8,7 +8,7 @@ import { useState, useMemo } from "react";
 import { createSupabaseBrowser } from "../supabaseClient";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function PortadaEditable({ bloques, articulos }: { bloques: any[], articulos: any[] }) {
+export default function PortadaEditable({ bloques, articulos, onRefetch }: { bloques: any[], articulos: any[], onRefetch: () => Promise<void> }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [bloqueEditando, setBloqueEditando] = useState<number|null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -439,6 +439,7 @@ export default function PortadaEditable({ bloques, articulos }: { bloques: any[]
         categorias={categorias}
         articuloActual={bloqueEditando ? bloquesState[bloqueEditando-1]?.articulo : null}
         onSelect={handleSelectArticulo}
+        onRefetch={onRefetch}
       />
     </main>
   );

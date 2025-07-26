@@ -8,6 +8,7 @@ export default function ArticuloSelectorModal({
   categorias,
   articuloActual,
   onSelect,
+  onRefetch,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: {
   open: boolean;
@@ -19,6 +20,7 @@ export default function ArticuloSelectorModal({
   articuloActual: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSelect: (articulo: any) => void;
+  onRefetch: () => Promise<void>;
 }) {
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState("");
