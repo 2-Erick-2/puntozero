@@ -4,6 +4,29 @@ import Link from "next/link";
 import { createSupabaseBrowser } from "../../supabaseClient";
 import { notFound } from "next/navigation";
 
+import { Metadata } from "next";
+
+// Generar metadatos dinámicos para compartir en URL
+export async function generateMetadata({ params }: ArticuloPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = createSupabaseBrowser();
+  const { data: articulo } = await supabase
+    .from('articulos')
+    .select('titulo, descripcion_corta, imagen')
+    .eq('slug', slug)
+    .single();
+
+  return {
+    title: `${articulo?.titulo ?? 'Artículo'} | Punto Zero`,
+    description: articulo?.descripcion_corta ?? "Punto Zero - Revista de Cultura, Moda y Tendencias",
+    openGraph: {
+      title: articulo?.titulo,
+      description: articulo?.descripcion_corta,
+      images: [articulo?.imagen ?? "/logo-puntozero.png"],
+    },
+  };
+}
+
 // Tipos para el artículo
 interface Articulo {
   id: string;
