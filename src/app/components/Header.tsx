@@ -1,28 +1,41 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { usePathname, useRouter } from 'next/navigation';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function Header() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
-  // Para swipe
   const menuTouch = useRef({ x: 0, y: 0 });
   const searchTouch = useRef({ x: 0, y: 0 });
 
-  const session = useSession();
-  const supabase = useSupabaseClient();
   const pathname = usePathname();
   const router = useRouter();
 
+  const [supabase] = useState(() => createClientComponentClient());
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+    };
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.replace('/login');
+    window.location.href = '/login';
   };
 
-  // Solo mostrar el botón en /admin o /login y si hay sesión
   const showLogout = session && (pathname.startsWith('/admin') || pathname.startsWith('/login'));
 
   // Handlers para swipe en menú hamburguesa
@@ -87,7 +100,7 @@ export default function Header() {
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-r hover:bg-blue-700 transition-colors">Buscar</button>
       </form>
       {/* Menú desplegable en móvil con animación moderna y swipe */}
-      <div className={`fixed inset-0 z-50 transition-all duration-300 ${openMenu ? 'visible opacity-100' : 'invisible opacity-0'}`} style={{background: openMenu ? 'rgba(0,0,0,0.25)' : 'transparent'}} onClick={() => setOpenMenu(false)}>
+      <div className={`fixed inset-0 z-50 transition-all duration-300 ${openMenu ? 'visible opacity-100' : 'invisible opacity-0'}`} style={{ background: openMenu ? 'rgba(0,0,0,0.25)' : 'transparent' }} onClick={() => setOpenMenu(false)}>
         <div
           className={`absolute top-0 left-0 w-4/5 max-w-xs h-full bg-white shadow-2xl transform transition-transform duration-300 ${openMenu ? 'translate-x-0' : '-translate-x-full'} flex flex-col items-start gap-4 py-8 px-6`}
           onClick={e => e.stopPropagation()}
@@ -105,7 +118,7 @@ export default function Header() {
         </div>
       </div>
       {/* Panel de búsqueda slide-in desde la derecha en móvil con swipe */}
-      <div className={`fixed inset-0 z-50 transition-all duration-300 ${openSearch ? 'visible opacity-100' : 'invisible opacity-0'}`} style={{background: openSearch ? 'rgba(0,0,0,0.25)' : 'transparent'}} onClick={() => setOpenSearch(false)}>
+      <div className={`fixed inset-0 z-50 transition-all duration-300 ${openSearch ? 'visible opacity-100' : 'invisible opacity-0'}`} style={{ background: openSearch ? 'rgba(0,0,0,0.25)' : 'transparent' }} onClick={() => setOpenSearch(false)}>
         <div
           className={`absolute top-0 right-0 w-4/5 max-w-xs h-full bg-white shadow-2xl transform transition-transform duration-300 ${openSearch ? 'translate-x-0' : 'translate-x-full'} flex flex-col items-start gap-4 py-8 px-6`}
           onClick={e => e.stopPropagation()}

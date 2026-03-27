@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -9,25 +9,39 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const session = useSession();
-  const supabase = useSupabaseClient();
+  const [supabase] = useState(() => createClientComponentClient());
+  const [session, setSession] = useState<any>(null);
+  const [authChecking, setAuthChecking] = useState(true);
 
   useEffect(() => {
-    if (session) {
-      router.replace('/admin');
-    }
-  }, [session, router]);
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+      setAuthChecking(false);
 
-  if (session) return null;
+      if (session) {
+        console.log("LoginPage - Session detected on load, forcing redirect to /admin...");
+        window.location.href = '/admin';
+      }
+    };
+    checkUser();
+  }, [supabase]);
+
+  if (authChecking || session) return <main className="min-h-screen flex items-center justify-center bg-gray-50"><p>Comprobando sesión...</p></main>;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    console.log("LoginPage - Supabase Response:", { data, error });
     setLoading(false);
     if (error) setError(error.message);
-    else router.replace('/admin');
+    else {
+      console.log("LoginPage - Login Success, forcing reload and redirect to /admin...");
+      // Forzar recarga completa para sincronizar cookies
+      window.location.href = '/admin';
+    }
   };
 
   return (

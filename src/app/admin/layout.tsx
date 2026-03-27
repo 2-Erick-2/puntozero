@@ -17,10 +17,25 @@ function CrearArticuloModal({ open, onClose }: { open: boolean, onClose: () => v
   const [categoria, setCategoria] = useState('');
   const [titulo, setTitulo] = useState('');
   const [contenido, setContenido] = useState('');
-  const [imagenFile, setImagenFile] = useState<File|null>(null);
-  const [imagenPreview, setImagenPreview] = useState<string|null>(null);
+  const [imagenFile, setImagenFile] = useState<File | null>(null);
+  const [imagenPreview, setImagenPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [categoriasExistentes, setCategoriasExistentes] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open) {
+      const fetchCats = async () => {
+        const supabase = createSupabaseBrowser();
+        const { data } = await supabase.from('articulos').select('categoria');
+        if (data) {
+          const cats = Array.from(new Set(data.map(i => i.categoria).filter(Boolean)));
+          setCategoriasExistentes(cats as string[]);
+        }
+      };
+      fetchCats();
+    }
+  }, [open]);
 
   // Limpiar formulario al cerrar
   const handleClose = () => {
@@ -94,7 +109,7 @@ function CrearArticuloModal({ open, onClose }: { open: boolean, onClose: () => v
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-8 relative animate-fadeIn">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-8 relative animate-fadeIn max-h-[90vh] overflow-y-auto">
         <button
           className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-red-600 font-bold"
           onClick={handleClose}
@@ -106,7 +121,19 @@ function CrearArticuloModal({ open, onClose }: { open: boolean, onClose: () => v
         {/* Selector/creador de categoría (mayúsculas) */}
         <div className="mb-4">
           <label className="block font-semibold mb-1">Categoría</label>
-          <input type="text" className="border rounded px-3 py-2 w-full uppercase" placeholder="Escribe o selecciona una categoría" value={categoria} onChange={e => setCategoria(e.target.value.toUpperCase())} />
+          <input
+            type="text"
+            list="categorias-list"
+            className="border rounded px-3 py-2 w-full uppercase"
+            placeholder="Escribe o selecciona una categoría"
+            value={categoria}
+            onChange={e => setCategoria(e.target.value.toUpperCase())}
+          />
+          <datalist id="categorias-list">
+            {categoriasExistentes.map(cat => (
+              <option key={cat} value={cat} />
+            ))}
+          </datalist>
         </div>
         {/* Título */}
         <div className="mb-4">
@@ -141,7 +168,7 @@ function EditarArticulosModal({ open, onClose, onRefetch }: { open: boolean, onC
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState("");
   // Saber si un artículo está asignado a un bloque
-  const [articulosAsignados, setArticulosAsignados] = useState<{[id: string]: boolean}>({});
+  const [articulosAsignados, setArticulosAsignados] = useState<{ [id: string]: boolean }>({});
 
   // Cargar artículos
   useEffect(() => {
@@ -159,7 +186,7 @@ function EditarArticulosModal({ open, onClose, onRefetch }: { open: boolean, onC
         .from('articulos')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       setArticulos(data || []);
     } catch (err: any) {
@@ -176,7 +203,7 @@ function EditarArticulosModal({ open, onClose, onRefetch }: { open: boolean, onC
       .from('bloques_portada')
       .select('articulo_id');
     if (error) return;
-    const asignados: {[id: string]: boolean} = {};
+    const asignados: { [id: string]: boolean } = {};
     (data || []).forEach((b: any) => {
       if (b.articulo_id) asignados[b.articulo_id] = true;
     });
@@ -199,7 +226,7 @@ function EditarArticulosModal({ open, onClose, onRefetch }: { open: boolean, onC
         .from('articulos')
         .delete()
         .eq('id', articulo.id);
-      
+
       if (error) throw error;
       alert('Artículo eliminado correctamente.');
       cargarArticulos();
@@ -231,7 +258,7 @@ function EditarArticulosModal({ open, onClose, onRefetch }: { open: boolean, onC
           ×
         </button>
         <h2 className="text-2xl font-bold mb-6 text-red-700">Editar Artículos</h2>
-        
+
         {/* Filtros */}
         <div className="flex gap-4 mb-6">
           <input
@@ -327,7 +354,20 @@ function EditarArticuloModal({ articulo, onClose, onGuardar }: { articulo: any, 
   const [imagenFile, setImagenFile] = useState<File | null>(null);
   const [imagenPreview, setImagenPreview] = useState(articulo.imagen);
   const [loading, setLoading] = useState(false);
+  const [categoriasExistentes, setCategoriasExistentes] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const fetchCats = async () => {
+      const supabase = createSupabaseBrowser();
+      const { data } = await supabase.from('articulos').select('categoria');
+      if (data) {
+        const cats = Array.from(new Set(data.map(i => i.categoria).filter(Boolean)));
+        setCategoriasExistentes(cats as string[]);
+      }
+    };
+    fetchCats();
+  }, []);
 
   const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -351,9 +391,9 @@ function EditarArticuloModal({ articulo, onClose, onGuardar }: { articulo: any, 
       const categoriaMayus = categoria.trim().toUpperCase();
       const descripcion_corta = contenido.replace(/<[^>]+>/g, '').slice(0, 120);
       const updated_at = new Date().toISOString();
-      
+
       let imagenUrl = articulo.imagen; // Mantener imagen actual por defecto
-      
+
       // Si se subió una nueva imagen
       if (imagenFile) {
         const fileExt = imagenFile.name.split('.').pop();
@@ -361,9 +401,9 @@ function EditarArticuloModal({ articulo, onClose, onGuardar }: { articulo: any, 
         const { data: imgData, error: imgError } = await supabase.storage
           .from('articulos')
           .upload(fileName, imagenFile, { upsert: true });
-        
+
         if (imgError) throw imgError;
-        
+
         const { data: urlData } = supabase.storage
           .from('articulos')
           .getPublicUrl(fileName);
@@ -384,7 +424,7 @@ function EditarArticuloModal({ articulo, onClose, onGuardar }: { articulo: any, 
         .eq('id', articulo.id);
 
       if (error) throw error;
-      
+
       alert('Artículo actualizado correctamente.');
       onGuardar();
     } catch (err: any) {
@@ -397,7 +437,7 @@ function EditarArticuloModal({ articulo, onClose, onGuardar }: { articulo: any, 
 
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-8 relative animate-fadeIn">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-8 relative animate-fadeIn max-h-[90vh] overflow-y-auto">
         <button
           className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-red-600 font-bold"
           onClick={onClose}
@@ -406,19 +446,25 @@ function EditarArticuloModal({ articulo, onClose, onGuardar }: { articulo: any, 
           ×
         </button>
         <h2 className="text-2xl font-bold mb-6 text-red-700">Editar Artículo</h2>
-        
+
         {/* Categoría */}
         <div className="mb-4">
           <label className="block font-semibold mb-1">Categoría</label>
           <input
             type="text"
+            list="categorias-edit-list"
             className="border rounded px-3 py-2 w-full uppercase"
             placeholder="Categoría"
             value={categoria}
             onChange={e => setCategoria(e.target.value.toUpperCase())}
           />
+          <datalist id="categorias-edit-list">
+            {categoriasExistentes.map(cat => (
+              <option key={cat} value={cat} />
+            ))}
+          </datalist>
         </div>
-        
+
         {/* Título */}
         <div className="mb-4">
           <label className="block font-semibold mb-1">Título</label>
@@ -430,7 +476,7 @@ function EditarArticuloModal({ articulo, onClose, onGuardar }: { articulo: any, 
             onChange={e => setTitulo(e.target.value)}
           />
         </div>
-        
+
         {/* Contenido */}
         <div className="mb-4">
           <label className="block font-semibold mb-1">Contenido</label>
@@ -441,7 +487,7 @@ function EditarArticuloModal({ articulo, onClose, onGuardar }: { articulo: any, 
             onChange={e => setContenido(e.target.value)}
           />
         </div>
-        
+
         {/* Imagen */}
         <div className="mb-6">
           <label className="block font-semibold mb-1">Imagen</label>
@@ -456,7 +502,7 @@ function EditarArticuloModal({ articulo, onClose, onGuardar }: { articulo: any, 
             <img src={imagenPreview} alt="Preview" className="max-h-40 rounded shadow" />
           )}
         </div>
-        
+
         <button
           disabled={loading}
           onClick={handleGuardar}

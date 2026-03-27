@@ -103,9 +103,9 @@ export default async function ArticuloPage({ params }: ArticuloPageProps) {
 
       {/* Contenido del artículo */}
       <article className="prose prose-lg max-w-none">
-        <div 
+        <div
           className="text-gray-800 leading-relaxed text-lg"
-          dangerouslySetInnerHTML={{ __html: articulo.contenido }}
+          dangerouslySetInnerHTML={{ __html: articulo.contenido ?? "" }}
         />
       </article>
 

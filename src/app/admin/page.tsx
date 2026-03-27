@@ -1,27 +1,36 @@
 "use client";
-import { useSession } from '@supabase/auth-helpers-react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import PortadaEditable from './PortadaEditable';
-import { createSupabaseBrowser } from "../supabaseClient";
 
 export default function AdminPage() {
-  const session = useSession();
   const router = useRouter();
+  const [supabase] = useState(() => createClientComponentClient());
+  const [session, setSession] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
   const [bloques, setBloques] = useState<unknown[]>([]);
   const [articulos, setArticulos] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!session) {
-      router.replace('/login');
-    }
-  }, [session, router]);
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+      setAuthLoading(false);
+
+      if (!session) {
+        console.log("AdminPage - No session found, redirecting to login");
+        router.replace('/login');
+      }
+    };
+    checkUser();
+  }, [supabase, router]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    const supabase = createSupabaseBrowser();
     const { data: bloquesData, error: bloquesError } = await supabase
       .from('bloques_portada')
       .select(`
@@ -65,12 +74,13 @@ export default function AdminPage() {
     };
 
     window.addEventListener('refetchAdminData', handleRefetchEvent);
-    
+
     return () => {
       window.removeEventListener('refetchAdminData', handleRefetchEvent);
     };
   }, [fetchData]);
 
+  if (authLoading) return <main className="max-w-6xl mx-auto w-full py-8 px-2 md:px-0 bg-white text-center">Verificando acceso de seguridad...</main>;
   if (!session) return null;
   if (loading) return <main className="max-w-6xl mx-auto w-full py-8 px-2 md:px-0 bg-white">Cargando portada...</main>;
   if (error) return <main className="max-w-6xl mx-auto w-full py-8 px-2 md:px-0 bg-white">{error}</main>;
